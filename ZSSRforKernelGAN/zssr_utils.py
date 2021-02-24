@@ -5,8 +5,9 @@ from imresize import imresize
 from scipy.ndimage import measurements, interpolation
 from scipy.io import loadmat
 from scipy.signal import convolve2d
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from random import sample
+tf.disable_v2_behavior()
 
 
 def random_augment(ims,
@@ -261,7 +262,8 @@ def create_loss_map(im, window=5, clip_rng=np.array([0.0, 255.0])):
     margin = int((window + window % 2) / 2)
     loss_map = np.zeros_like(processed_gmag)
     # ignoring edges + clipping
-    loss_map[margin:-margin, margin:-margin] = np.clip(processed_gmag[margin:-margin, margin:-margin], clip_rng[0], clip_rng[1])
+    loss_map[margin:-margin, margin:-margin] = np.clip(processed_gmag[margin:-margin, margin:-margin], clip_rng[0],
+                                                       clip_rng[1])
     # Normalizing the grad magnitude to sum to numel
     norm_factor = np.sum(loss_map) / numel
     loss_map = loss_map / norm_factor
