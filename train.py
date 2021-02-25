@@ -11,7 +11,7 @@ from learner import Learner
 
 writer = SummaryWriter('runs/fashion_mnist_experiment_1')
 for i in range(5):
-    writer.add_scalar("tag", {i: i + 1})
+    writer.add_scalar("tag", {"val": i + 1})
 
 
 def train(conf):
