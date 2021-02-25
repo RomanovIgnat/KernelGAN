@@ -1,6 +1,7 @@
 import os
 import tqdm
 from torch.utils.tensorboard import SummaryWriter
+import numpy as np
 
 
 from configs import Config
@@ -9,9 +10,13 @@ from kernelGAN import KernelGAN
 from learner import Learner
 
 
-writer = SummaryWriter('runs/fashion_mnist_experiment_1')
-for i in range(5):
-    writer.add_scalars("tag", {"val": i + 1})
+writer = SummaryWriter()
+r = 5
+for i in range(100):
+    writer.add_scalars('run_14h', {'xsinx':i*np.sin(i/r),
+                                    'xcosx':i*np.cos(i/r),
+                                    'tanx': np.tan(i/r)}, i)
+writer.close()
 
 
 def train(conf):
