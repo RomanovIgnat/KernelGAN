@@ -10,6 +10,8 @@ from learner import Learner
 
 
 writer = SummaryWriter('runs/fashion_mnist_experiment_1')
+for i in range(5):
+    writer.add_scalar("tag", i)
 
 
 def train(conf):
@@ -20,8 +22,6 @@ def train(conf):
         [g_in, d_in] = data.__getitem__(iteration)
         gan.train(g_in, d_in)
         learner.update(iteration, gan)
-
-        writer.add_scalar("tag", 1)
     gan.finish()
 
 
