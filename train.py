@@ -1,10 +1,15 @@
 import os
 import tqdm
+from tensorboardcolab import TensorBoardColab
+
 
 from configs import Config
 from data import DataGenerator
 from kernelGAN import KernelGAN
 from learner import Learner
+
+
+tb = TensorBoardColab()
 
 
 def train(conf):
@@ -15,6 +20,8 @@ def train(conf):
         [g_in, d_in] = data.__getitem__(iteration)
         gan.train(g_in, d_in)
         learner.update(iteration, gan)
+
+        tb.save_value("i", 1)
     gan.finish()
 
 
