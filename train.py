@@ -1,6 +1,6 @@
 import os
 import tqdm
-from tensorboardcolab import TensorBoardColab
+from torch.utils.tensorboard import SummaryWriter
 
 
 from configs import Config
@@ -9,7 +9,7 @@ from kernelGAN import KernelGAN
 from learner import Learner
 
 
-tb = TensorBoardColab()
+writer = SummaryWriter('runs/fashion_mnist_experiment_1')
 
 
 def train(conf):
@@ -21,7 +21,7 @@ def train(conf):
         gan.train(g_in, d_in)
         learner.update(iteration, gan)
 
-        tb.save_value("i", 1)
+        writer.add_scalar("tag", 1)
     gan.finish()
 
 
