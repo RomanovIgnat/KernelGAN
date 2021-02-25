@@ -15,7 +15,7 @@ r = 5
 for i in range(100):
     writer.add_scalars('run_14h', {'xsinx':(i + 1) * np.sin(i/r),
                                     'xcosx':(i + 1) * np.cos(i/r),
-                                    'tanx': np.tan(i/r)}, i)
+                                    'tanx': np.tan(i/r)}, 2 * i)
 writer.close()
 
 
