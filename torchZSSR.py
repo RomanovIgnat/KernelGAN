@@ -287,6 +287,8 @@ class ZSSR:
         for self.iter in range(self.conf.max_iters):
             # Use augmentation from original input image to create current father.
             # If other scale factors were applied before, their result is also used (hr_fathers_in)
+            crop_center = None
+
             self.hr_father = random_augment(ims=self.hr_fathers_sources,
                                             base_scales=[1.0] + self.conf.scale_factors,
                                             leave_as_is_probability=self.conf.augment_leave_as_is_probability,
@@ -297,7 +299,10 @@ class ZSSR:
                                             allow_rotation=self.conf.augment_allow_rotation,
                                             scale_diff_sigma=self.conf.augment_scale_diff_sigma,
                                             shear_sigma=self.conf.augment_shear_sigma,
-                                            crop_size=self.conf.crop_size)
+                                            crop_size=self.conf.crop_size,
+                                            allow_scale_in_no_interp=self.conf.allow_scale_in_no_interp,
+                                            crop_center=crop_center,
+                                            loss_map_sources=self.loss_map_sources)
 
             # Get lr-son from hr-father
             self.lr_son = self.father_to_son(self.hr_father)
