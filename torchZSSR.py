@@ -99,6 +99,12 @@ class ZSSR:
         # then we use default provided by the configs
         # self.file_name = input_img if type(input_img) is str else self.conf.name
 
+        # Create a loss map reflecting the weights per pixel of the image
+        self.loss_map = create_loss_map(im=self.input) if self.conf.grad_based_loss_map else np.ones_like(self.input)
+
+        # loss maps that correspond to the father sources array
+        self.loss_map_sources = [self.loss_map]
+
     def run(self):
         # Run gradually on all scale factors (if only one jump then this loop only happens once)
         for self.sf_ind, (sf, self.kernel) in enumerate(zip(self.conf.scale_factors, self.kernels)):
@@ -129,6 +135,11 @@ class ZSSR:
 
             # Keep the results for the next scale factors SR to use as dataset
             self.hr_fathers_sources.append(post_processed_output)
+
+            # append a corresponding map loss
+            self.loss_map_sources.append(create_loss_map(
+                im=post_processed_output)) if self.conf.grad_based_loss_map else self.loss_map_sources.append(
+                np.ones_like(post_processed_output))
 
             # In some cases, the current output becomes the new input. If indicated and if this is the right scale to
             # become the new base input. all of these conditions are checked inside the function.

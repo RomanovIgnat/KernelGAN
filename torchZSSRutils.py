@@ -1,6 +1,10 @@
+from random import sample
+
 import numpy as np
 from math import pi, sin, cos
 from cv2 import warpPerspective, INTER_CUBIC
+from scipy.signal import convolve2d
+
 from imresize import imresize
 from shutil import copy
 from time import strftime, localtime
@@ -164,7 +168,7 @@ def random_augment(ims,
 
 def back_projection(y_sr, y_lr, down_kernel, up_kernel, sf=None):
     y_sr += imresize(y_lr - imresize(y_sr,
-                                     scale_factor=1.0/sf,
+                                     scale_factor=1.0 / sf,
                                      output_shape=y_lr.shape,
                                      kernel=down_kernel),
                      scale_factor=sf,
@@ -231,3 +235,99 @@ def prepare_result_dir(conf):
             copy(py_file, conf.result_path)
 
     return conf.result_path
+
+
+def tensorshave(im, margin):
+    shp = im.shape
+    if shp[3] == 3:
+        return im[:, margin:-margin, margin:-margin, :]
+    else:
+        return im[:, margin:-margin, margin:-margin]
+
+
+def rgb_augment(im, rndm=True, shuff_ind=0):
+    if rndm:
+        shuffle = sample(range(3), 3)
+    else:
+        shuffle = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]]
+        shuffle = shuffle[shuff_ind]
+
+    return im[:, :, shuffle]
+
+
+def probability_map(im, crop_size):
+    # margin of probabilities that will be zero
+    margin = crop_size // 2 - 1
+    prob_map = np.zeros(im.shape[0:2])
+    # Gradient calculation
+    gx, gy, _ = np.gradient(im)
+    grad_magnitude = np.sum(np.sqrt(gx ** 2 + gy ** 2), axis=2)
+    # Convolving with rect to get a map of probabilities per crop
+    rect = np.ones([crop_size - 3, crop_size - 3])
+    grad_magnitude_conv = convolve2d(grad_magnitude, rect, 'same')
+    # Copying the values without the margins of the image
+    prob_map[margin:-margin, margin:-margin] = grad_magnitude_conv[margin:-margin, margin:-margin]
+    # normalize for probabilities
+    sum_of_grads = np.sum(prob_map)
+    prob_map = prob_map / sum_of_grads
+
+    return prob_map
+
+
+def choose_center_of_crop(prob_map):
+    # Retrieving a probability map and reshaping to be a vector
+    prob_vector = np.reshape(prob_map, prob_map.shape[0] * prob_map.shape[1])
+    # creating a vector of indices to match the image
+    indices = np.arange(start=0, stop=prob_map.shape[0] * prob_map.shape[1])
+    # Choosing an index according to the probabilities
+    index_choice = np.random.choice(indices, p=prob_vector)
+    # Translating to an index in the image - row, column
+    return index_choice // prob_map.shape[1], index_choice % prob_map.shape[1]
+
+
+def create_loss_map(im, window=5, clip_rng=np.array([0.0, 255.0])):
+    # Counting number of pixels for normalization issues
+    numel = im.shape[0] * im.shape[1]
+    # rgb2gray if image is in color
+    gray = np.dot(im[:, :, 0:3], [0.299, 0.587, 0.114]) if len(im.shape) == 3 else im
+    # Gradient calculation
+    gx, gy = np.gradient(gray)
+    gmag = np.sqrt(gx ** 2 + gy ** 2)
+    processed_gmag = convolve2d(gmag, np.ones(shape=(window, window)), 'same')
+    # pad the gmag with zeros the size of the process to eliminate artifacts
+    margin = int((window + window % 2) / 2)
+    loss_map = np.zeros_like(processed_gmag)
+    # ignoring edges + clipping
+    loss_map[margin:-margin, margin:-margin] = np.clip(processed_gmag[margin:-margin, margin:-margin], clip_rng[0],
+                                                       clip_rng[1])
+    # Normalizing the grad magnitude to sum to numel
+    norm_factor = np.sum(loss_map) / numel
+    loss_map = loss_map / norm_factor
+
+    # In case the image is color, return 3 channels with the loss map duplicated
+    if len(im.shape) == 3:
+        loss_map = np.expand_dims(loss_map, axis=2)
+        loss_map = np.append(np.append(loss_map, loss_map, axis=2), loss_map, axis=2)
+
+    return loss_map
+
+
+def image_float2int(im):
+    """converts a float image to uint"""
+    if np.max(im) < 2:
+        im = im * 255.
+    return np.uint8(im)
+
+
+def image_int2float(im):
+    """converts a uint image to float"""
+    return np.float32(im) / 255. if np.max(im) > 2 else im
+
+
+def back_project_image(lr, sf=2, output_shape=None, down_kernel='cubic', up_kernel='cubic', bp_iters=8):
+    """Runs 'bp_iters' iteration of back projection SR technique"""
+    tmp_sr = imresize(lr, scale_factor=sf, output_shape=output_shape, kernel=up_kernel)
+    for _ in range(bp_iters):
+        tmp_sr = back_projection(y_sr=tmp_sr, y_lr=lr, down_kernel=down_kernel, up_kernel=up_kernel, sf=sf)
+    return tmp_sr
+
