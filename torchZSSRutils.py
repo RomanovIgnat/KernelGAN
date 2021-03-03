@@ -179,8 +179,14 @@ def preprocess_kernels(kernels, conf):
     # In case of arrays, we shift the kernels (see next function for explanation why).
     # Kernel is a .mat file (MATLAB) containing a variable called 'Kernel' which is a 2-dim matrix.
     if kernels is not None:
+        return [kernel_shift(kernel, sf)
+                for kernel, sf in zip(kernels, conf.scale_factors)]
+
+        '''
         return [kernel_shift(loadmat(kernel)['Kernel'], sf)
                 for kernel, sf in zip(kernels, conf.scale_factors)]
+        '''
+
     else:
         return [conf.downscale_method] * len(conf.scale_factors)
 
