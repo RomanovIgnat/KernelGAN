@@ -9,7 +9,7 @@ from scipy.signal import convolve2d
 from torch.nn import functional as F
 from scipy.ndimage import measurements, interpolation
 
-from ZSSRforKernelGAN.ZSSR import ZSSR
+from torchZSSR import ZSSR
 
 
 def move2cpu(d):
