@@ -70,6 +70,7 @@ class ZSSR:
         self.cuda = True
         # Read input image (can be either a numpy array or a path to an image file)
         self.input = input_img if type(input_img) is not str else img.imread(input_img)
+        self.input /= 255.
         self.Y = False
         if len(self.input) == 2:
             self.Y = True
@@ -318,10 +319,6 @@ class ZSSR:
                                allow_scale_in_no_interp=self.conf.allow_scale_in_no_interp,
                                crop_center=crop_center,
                                loss_map_sources=self.loss_map_sources)
-
-            if not self.iter % 100:
-                print(self.input.shape)
-                print(self.input)
 
             # Get lr-son from hr-father
             self.lr_son = self.father_to_son(self.hr_father)
