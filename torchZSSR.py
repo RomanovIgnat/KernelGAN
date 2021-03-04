@@ -320,6 +320,7 @@ class ZSSR:
                                loss_map_sources=self.loss_map_sources)
 
             if not self.iter % 100:
+                print(self.hr_father.shape)
                 print(self.hr_father)
 
             # Get lr-son from hr-father
