@@ -70,7 +70,7 @@ class ZSSR:
         self.cuda = True
         # Read input image (can be either a numpy array or a path to an image file)
         self.input = input_img if type(input_img) is not str else img.imread(input_img)
-        self.input /= 255.
+        self.input = self.input / 255. if self.input.dtype == 'uint8' else self.input # ???
         self.Y = False
         if len(self.input) == 2:
             self.Y = True
