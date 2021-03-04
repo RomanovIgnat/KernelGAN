@@ -214,6 +214,7 @@ class ZSSR:
 
         if not self.iter % 100:
             print("cur loss:", loss)
+            print(hr_father)
 
         return np.clip(np.squeeze(train_output.cpu().detach().numpy()), 0, 1)
 
