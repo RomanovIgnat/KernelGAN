@@ -212,6 +212,9 @@ class ZSSR:
         optimizer.step()
         self.loss[self.iter] = loss
 
+        if not self.iter % 100:
+            print("cur loss:", loss)
+
         return np.clip(np.squeeze(train_output.cpu().detach().numpy()), 0, 1)
 
     def forward_pass(self, lr_son, hr_father_shape=None):
