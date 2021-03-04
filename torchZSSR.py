@@ -214,7 +214,7 @@ class ZSSR:
 
         if not self.iter % 100:
             print("cur loss:", loss)
-            print(hr_father)
+            # print(hr_father)
 
         return np.clip(np.squeeze(train_output.cpu().detach().numpy()), 0, 1)
 
@@ -322,6 +322,9 @@ class ZSSR:
             # Get lr-son from hr-father
             self.lr_son = self.father_to_son(self.hr_father)
             # should convert input and output to torch tensor
+
+            if not self.iter % 100:
+                print(self.hr_father)
 
             # run network forward and back propagation, one iteration (This is the heart of the training)
             self.train_output = self.forward_backward_pass(self.lr_son, self.hr_father, criterion, optimizer)
