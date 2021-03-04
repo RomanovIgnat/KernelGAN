@@ -330,4 +330,3 @@ def back_project_image(lr, sf=2, output_shape=None, down_kernel='cubic', up_kern
     for _ in range(bp_iters):
         tmp_sr = back_projection(y_sr=tmp_sr, y_lr=lr, down_kernel=down_kernel, up_kernel=up_kernel, sf=sf)
     return tmp_sr
-
