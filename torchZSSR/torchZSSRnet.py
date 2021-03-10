@@ -34,7 +34,6 @@ class simpleNet(nn.Module):
         inputs = self.input(self.relu(x))
         out = inputs
 
-        print("just before trouble", out.shape)
         out = self.conv1(self.relu(out))
         out = self.conv2(self.relu(out))
         out = self.conv3(self.relu(out))
