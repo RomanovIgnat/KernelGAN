@@ -87,6 +87,6 @@ class DataGenerator(Dataset):
         cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_image))
 
         if not for_g:
-            cropped_image += np.random.rand(*cropped_image.shape)
+            cropped_image += im2tensor(np.random.rand(*cropped_image.shape))
 
         return cropped_image
