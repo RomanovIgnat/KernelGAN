@@ -232,7 +232,9 @@ class ZSSR:
         # Create feed dict
 
         # Run network
-        return np.clip(np.squeeze(self.model(interpolated_lr_son).cpu().detach().permute(0, 2, 3, 1).numpy()), 0, 1)
+        with torch.no_grad():
+            res = self.model(interpolated_lr_son)
+        return np.clip(np.squeeze(self.model(res).cpu().detach().permute(0, 2, 3, 1).numpy()), 0, 1)
 
     def learning_rate_policy(self):
         # fit linear curve and check slope to determine whether to do nothing, reduce learning rate or finish
