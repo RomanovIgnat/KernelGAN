@@ -235,7 +235,7 @@ class ZSSR:
         with torch.no_grad():
             torch.cuda.empty_cache()
             res = self.model(interpolated_lr_son)
-        return np.clip(np.squeeze(self.model(res).cpu().detach().permute(0, 2, 3, 1).numpy()), 0, 1)
+        return np.clip(np.squeeze(res.cpu().detach().permute(0, 2, 3, 1).numpy()), 0, 1)
 
     def learning_rate_policy(self):
         # fit linear curve and check slope to determine whether to do nothing, reduce learning rate or finish
