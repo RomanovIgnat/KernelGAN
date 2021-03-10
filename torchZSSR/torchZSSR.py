@@ -233,6 +233,7 @@ class ZSSR:
 
         # Run network
         with torch.no_grad():
+            torch.cuda.memory_summary()
             res = self.model(interpolated_lr_son)
         return np.clip(np.squeeze(self.model(res).cpu().detach().permute(0, 2, 3, 1).numpy()), 0, 1)
 
@@ -269,24 +270,25 @@ class ZSSR:
         # Run net on the input to get the output super-resolution (almost final result, only post-processing needed)
         with torch.no_grad():
             self.sr = self.forward_pass(self.input)
-            self.mse = (self.mse + [np.mean(np.ndarray.flatten(np.square(self.gt_per_sf - self.sr)))]
-                        if self.gt_per_sf is not None else None)
 
-            # 2. Reconstruction MSE, run for reconstruction- try to reconstruct the input from a downscaled version of it
-            self.reconstruct_output = self.forward_pass(self.father_to_son(self.input), self.input.shape)
-            self.mse_rec.append(np.mean(np.ndarray.flatten(np.square(self.input - self.reconstruct_output))))
+        self.mse = (self.mse + [np.mean(np.ndarray.flatten(np.square(self.gt_per_sf - self.sr)))]
+                    if self.gt_per_sf is not None else None)
 
-            # 3. True MSE of simple interpolation for reference (only if ground-truth was given)
-            interp_sr = imresize(self.input, self.sf, self.output_shape, self.conf.upscale_method)
-            self.interp_mse = (self.interp_mse + [np.mean(np.ndarray.flatten(np.square(self.gt_per_sf - interp_sr)))]
-                               if self.gt_per_sf is not None else None)
+        # 2. Reconstruction MSE, run for reconstruction- try to reconstruct the input from a downscaled version of it
+        self.reconstruct_output = self.forward_pass(self.father_to_son(self.input), self.input.shape)
+        self.mse_rec.append(np.mean(np.ndarray.flatten(np.square(self.input - self.reconstruct_output))))
 
-            # 4. Reconstruction MSE of simple interpolation over downscaled input
-            interp_rec = imresize(self.father_to_son(self.input), self.sf, self.input.shape[0:2], self.conf.upscale_method)
-            self.interp_rec_mse.append(np.mean(np.ndarray.flatten(np.square(self.input - interp_rec))))
+        # 3. True MSE of simple interpolation for reference (only if ground-truth was given)
+        interp_sr = imresize(self.input, self.sf, self.output_shape, self.conf.upscale_method)
+        self.interp_mse = (self.interp_mse + [np.mean(np.ndarray.flatten(np.square(self.gt_per_sf - interp_sr)))]
+                           if self.gt_per_sf is not None else None)
 
-            # Track the iters in which tests are made for the graphics x axis
-            self.mse_steps.append(self.iter)
+        # 4. Reconstruction MSE of simple interpolation over downscaled input
+        interp_rec = imresize(self.father_to_son(self.input), self.sf, self.input.shape[0:2], self.conf.upscale_method)
+        self.interp_rec_mse.append(np.mean(np.ndarray.flatten(np.square(self.input - interp_rec))))
+
+        # Track the iters in which tests are made for the graphics x axis
+        self.mse_steps.append(self.iter)
 
         '''
         # Display test results if indicated
