@@ -219,6 +219,7 @@ class ZSSR:
         feed_dict = {'lr_son:0': np.expand_dims(interpolated_lr_son, 0)}
 
         # Run network
+        print("same shit", interpolated_lr_son.shape)
         return np.clip(np.squeeze(self.sess.run([self.net_output_t], feed_dict)), 0, 1)
 
     def learning_rate_policy(self):
