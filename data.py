@@ -2,6 +2,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from imresize import imresize
 from util import read_image, create_gradient_map, im2tensor, create_probability_map, nn_interpolation
+import torch
 import torchvision
 
 
@@ -84,9 +85,9 @@ class DataGenerator(Dataset):
 
     def next_crop(self, for_g):
         size_of_crop = self.g_input_shape if for_g else self.d_input_shape
-        cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_image))
+        cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(torch.tensor(self.input_image))
 
         if not for_g:
-            cropped_image += im2tensor(np.random.rand(size_of_crop, size_of_crop))
+            cropped_image += torch.tensor(np.random.rand(size_of_crop, size_of_crop, 3))
 
         return cropped_image
