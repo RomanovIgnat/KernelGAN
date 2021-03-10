@@ -265,7 +265,7 @@ class ZSSR:
 
         # 1. True MSE (only if ground-truth was given), note: this error is before post-processing.
         # Run net on the input to get the output super-resolution (almost final result, only post-processing needed)
-        with torch.no_grad:
+        with torch.no_grad():
             self.sr = self.forward_pass(self.input)
             self.mse = (self.mse + [np.mean(np.ndarray.flatten(np.square(self.gt_per_sf - self.sr)))]
                         if self.gt_per_sf is not None else None)
