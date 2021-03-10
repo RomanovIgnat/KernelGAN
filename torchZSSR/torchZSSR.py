@@ -65,12 +65,12 @@ class ZSSR:
     loss_map = []
     loss_map_sources = []
 
-    def __init__(self, input_img, scale_factor=2, kernels=None, is_real_img=False, noise_scale=1.):
+    def __init__(self, input_img_path, scale_factor=2, kernels=None, is_real_img=False, noise_scale=1.):
         # Acquire meta parameters configuration from configuration class as a class variable
         self.conf = Config(scale_factor, is_real_img, noise_scale)
         self.cuda = True
         # Read input image (can be either a numpy array or a path to an image file)
-        self.input = input_img if type(input_img) is not str else img.imread(input_img)
+        self.input = img.imread(input_img_path)
         self.input = self.input / 255. if self.input.dtype == 'uint8' else self.input # ???
         self.Y = False
         if len(self.input) == 2:
