@@ -233,7 +233,7 @@ class ZSSR:
 
         # Run network
         with torch.no_grad():
-            torch.cuda.memory_summary()
+            print(torch.cuda.memory_summary())
             res = self.model(interpolated_lr_son)
         return np.clip(np.squeeze(self.model(res).cpu().detach().permute(0, 2, 3, 1).numpy()), 0, 1)
 
