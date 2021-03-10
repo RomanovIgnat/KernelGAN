@@ -1,11 +1,8 @@
-import torch.nn as nn
-import torch
 # import matplotlib.pyplot as plt
-import matplotlib.image as img
 # from matplotlib.gridspec import GridSpec
-from torchZSSRconfigs import Config  # !!! other config
-from torchZSSRutils import *
-from torchZSSRnet import simpleNet
+from torchZSSR.torchZSSR import Config  # !!! other config
+from torchZSSR.torchZSSR import *
+from torchZSSR.torchZSSR import simpleNet
 
 
 class ZSSR:
