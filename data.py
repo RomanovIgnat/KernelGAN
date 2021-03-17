@@ -20,7 +20,7 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
-        self.input_lr = read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0818ss.png") / 255.  # implement
+        self.input_lr = read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0803ss.png") / 255.  # implement
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
