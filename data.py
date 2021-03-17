@@ -37,7 +37,7 @@ class DataGenerator(Dataset):
 
         return g_in, d_in
 
-    '''
+
     def next_crop(self, for_g, idx):
         """Return a crop according to the pre-determined list of indices. Noise is added to crops for D"""
         size = self.g_input_shape if for_g else self.d_input_shape
@@ -46,7 +46,7 @@ class DataGenerator(Dataset):
         if not for_g:  # Add noise to the image for d
             crop_im += np.random.randn(*crop_im.shape) / 255.0
         return im2tensor(crop_im)
-    '''
+
 
     def make_list_of_crop_indices(self, conf):
         iterations = conf.max_iters
@@ -83,6 +83,7 @@ class DataGenerator(Dataset):
         # Choose even indices (to avoid misalignment with the loss map for_g)
         return top - top % 2, left - left % 2
 
+    """
     def next_crop(self, for_g):
         size_of_crop = self.g_input_shape if for_g else self.d_input_shape
         cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_image))
@@ -91,3 +92,4 @@ class DataGenerator(Dataset):
             cropped_image += im2tensor(np.random.rand(size_of_crop, size_of_crop, 3))
 
         return cropped_image
+    """
