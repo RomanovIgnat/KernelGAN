@@ -32,11 +32,10 @@ class DataGenerator(Dataset):
 
     def __getitem__(self, idx):
         """Get a crop for both G and D """
-        g_in = self.next_crop(for_g=True) # , idx=idx)
-        d_in = self.next_crop(for_g=False) #, idx=idx)
+        g_in = self.next_crop(for_g=True, idx=idx)  # comment idx
+        d_in = self.next_crop(for_g=False, idx=idx)  # comment idx
 
         return g_in, d_in
-
 
     def next_crop(self, for_g, idx):
         """Return a crop according to the pre-determined list of indices. Noise is added to crops for D"""
@@ -46,7 +45,6 @@ class DataGenerator(Dataset):
         if not for_g:  # Add noise to the image for d
             crop_im += np.random.randn(*crop_im.shape) / 255.0
         return im2tensor(crop_im)
-
 
     def make_list_of_crop_indices(self, conf):
         iterations = conf.max_iters
