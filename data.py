@@ -20,9 +20,10 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
+        self.input_lr = read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0818ss.png") / 255.  # implement
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
 
-        self.in_rows, self.in_cols = self.input_image.shape[0:2]
+        # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
         # Create prob map for choosing the crop
         self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
@@ -33,7 +34,7 @@ class DataGenerator(Dataset):
     def __getitem__(self, idx):
         """Get a crop for both G and D """
         g_in = self.next_crop(for_g=True, idx=idx)  # comment idx
-        d_in = self.next_crop(for_g=False, idx=idx)  # comment idx
+        d_in = self.my_next_crop(for_g=False) # used to be next crop, idx=idx)  # comment idx
 
         return g_in, d_in
 
@@ -76,18 +77,16 @@ class DataGenerator(Dataset):
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
         center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
-        row, col = int(center / self.in_cols), center % self.in_cols
-        top, left = min(max(0, row - size // 2), self.in_rows - size), min(max(0, col - size // 2), self.in_cols - size)
+        row, col = int(center / self.input_image.shape[1]), center % self.input_image.shape[1]
+        top, left = min(max(0, row - size // 2), self.input_image.shape[0] - size), min(max(0, col - size // 2), self.input_image.shape[1] - size)
         # Choose even indices (to avoid misalignment with the loss map for_g)
         return top - top % 2, left - left % 2
 
-    """
-    def next_crop(self, for_g):
+    def my_next_crop(self, for_g):
         size_of_crop = self.g_input_shape if for_g else self.d_input_shape
-        cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_image))
+        cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_lr))
 
         if not for_g:
             cropped_image += im2tensor(np.random.rand(size_of_crop, size_of_crop, 3))
 
         return cropped_image
-    """
