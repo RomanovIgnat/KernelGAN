@@ -20,7 +20,7 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
-        self.input_lr = read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0803ss.png") / 255.  # implement
+        #  self.input_lr = read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0803ss.png") / 255.  # implement
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
@@ -33,8 +33,8 @@ class DataGenerator(Dataset):
 
     def __getitem__(self, idx):
         """Get a crop for both G and D """
-        g_in = self.next_crop(for_g=True, idx=idx)  # comment idx
-        d_in = self.my_next_crop(for_g=False) # used to be next crop, idx=idx)  # comment idx
+        g_in = self.my_next_crop(for_g=True)  #, idx=idx)  # comment idx
+        d_in = self.my_next_crop(for_g=False)  # used to be next crop, idx=idx)  # comment idx
 
         return g_in, d_in
 
@@ -42,7 +42,7 @@ class DataGenerator(Dataset):
         """Return a crop according to the pre-determined list of indices. Noise is added to crops for D"""
         size = self.g_input_shape if for_g else self.d_input_shape
         top, left = self.get_top_left(size, for_g, idx)
-        crop_im = self.input_image[top:top + size, left:left + size, :]
+        crop_im = np.copy(self.input_image[top:top + size, left:left + size, :])
         if not for_g:  # Add noise to the image for d
             crop_im += np.random.randn(*crop_im.shape) / 255.0
         return im2tensor(crop_im)
@@ -84,9 +84,9 @@ class DataGenerator(Dataset):
 
     def my_next_crop(self, for_g):
         size_of_crop = self.g_input_shape if for_g else self.d_input_shape
-        cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_lr))
+        cropped_image = torchvision.transforms.RandomCrop(size_of_crop)(im2tensor(self.input_image))
 
         if not for_g:
-            cropped_image += im2tensor(np.random.rand(size_of_crop, size_of_crop, 3))
+            cropped_image += im2tensor(np.random.randn(size_of_crop, size_of_crop, 3) / 255.)
 
         return cropped_image
