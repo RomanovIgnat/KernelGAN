@@ -6,6 +6,10 @@ import torch
 import torchvision
 
 
+np.random.seed(0)
+torch.random.seed(0)
+
+
 class DataGenerator(Dataset):
     """
     The data generator loads an image once, calculates it's gradient map on initialization and then outputs a cropped version
