@@ -7,7 +7,7 @@ import torchvision
 
 
 np.random.seed(0)
-torch.random.seed(0)
+torch.manual_seed(0)
 
 
 class DataGenerator(Dataset):
