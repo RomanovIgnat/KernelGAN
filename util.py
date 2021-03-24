@@ -212,7 +212,9 @@ def kernel_shift(kernel, sf):
 
 def save_final_kernel(k_2, conf):
     """saves the final kernel and the analytic kernel to the results folder"""
-    sio.savemat(os.path.join(conf.output_dir_path, '%s_kernel_x2.mat' % conf.img_name), {'Kernel': k_2})
+    # sio.savemat(os.path.join(conf.output_dir_path, '%s_kernel_x2.mat' % conf.img_name), {'Kernel': k_2})
+    im = Image.fromarray(k_2)
+    im.save(os.path.join(conf.output_dir_path, '%s_kernel_x2.png' % conf.img_name))
     if conf.X4:
         k_4 = analytic_kernel(k_2)
         sio.savemat(os.path.join(conf.output_dir_path, '%s_kernel_x4.mat' % conf.img_name), {'Kernel': k_4})
