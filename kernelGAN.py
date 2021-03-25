@@ -89,8 +89,8 @@ class KernelGAN:
         loss_g = self.criterionGAN(d_last_layer=d_pred_fake, is_d_input_real=True)
         # Sum all losses
         total_loss_g = loss_g + self.calc_constraints(g_pred)
-        if not (self.generator_iteration % 100):
-            writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration % 100)
+        if not (self.generator_iteration % 10):
+            writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration // 10)
         self.generator_iteration += 1
         # Calculate gradients
         total_loss_g.backward()
