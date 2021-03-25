@@ -12,6 +12,7 @@ from kernelGAN import KernelGAN
 from learner import Learner
 
 
+'''
 writer = SummaryWriter()
 r = 5
 for i in range(100):
@@ -20,6 +21,7 @@ for i in range(100):
                                     'xcosx':(i + 1) * np.cos(i/r),
                                     'tanx': np.tan(i/r)}, 3 * i)
 writer.close()
+'''
 
 
 def train(conf):

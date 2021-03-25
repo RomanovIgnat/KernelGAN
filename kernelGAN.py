@@ -3,6 +3,10 @@ import loss
 import networks
 import torch.nn.functional as F
 from util import save_final_kernel, run_zssr, post_process_k
+from torch.utils.tensorboard import SummaryWriter
+
+
+writer = SummaryWriter()
 
 
 class KernelGAN:
@@ -52,6 +56,8 @@ class KernelGAN:
         self.optimizer_G = torch.optim.Adam(self.G.parameters(), lr=conf.g_lr, betas=(conf.beta1, 0.999))
         self.optimizer_D = torch.optim.Adam(self.D.parameters(), lr=conf.d_lr, betas=(conf.beta1, 0.999))
 
+        self.generator_iteration = 0  # for tensorboard
+
         print('*' * 60 + '\nSTARTED KernelGAN on: \"%s\"...' % conf.input_image_path)
 
     # noinspection PyUnboundLocalVariable
@@ -82,6 +88,8 @@ class KernelGAN:
         loss_g = self.criterionGAN(d_last_layer=d_pred_fake, is_d_input_real=True)
         # Sum all losses
         total_loss_g = loss_g + self.calc_constraints(g_pred)
+        writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration)
+        self.generator_iteration += 1
         # Calculate gradients
         total_loss_g.backward()
         # Update weights
