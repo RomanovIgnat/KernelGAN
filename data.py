@@ -37,8 +37,8 @@ class DataGenerator(Dataset):
 
     def __getitem__(self, idx):
         """Get a crop for both G and D """
-        g_in = self.next_crop(for_g=True, idx=idx)  # comment idx
-        d_in = self.next_crop(for_g=False, idx=idx)  # comment idx
+        g_in = self.my_next_crop(for_g=True) #, idx=idx)  # comment idx
+        d_in = self.my_next_crop(for_g=False) #, idx=idx)  # comment idx
 
         return g_in, d_in
 
