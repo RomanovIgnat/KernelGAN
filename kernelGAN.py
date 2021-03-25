@@ -90,7 +90,7 @@ class KernelGAN:
         # Sum all losses
         total_loss_g = loss_g + self.calc_constraints(g_pred)
         if not (self.generator_iteration % 10):
-            writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration // 10)
+            writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration)
         self.generator_iteration += 1
         # Calculate gradients
         total_loss_g.backward()
