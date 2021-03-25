@@ -57,6 +57,7 @@ class KernelGAN:
         self.optimizer_D = torch.optim.Adam(self.D.parameters(), lr=conf.d_lr, betas=(conf.beta1, 0.999))
 
         self.generator_iteration = 0  # for tensorboard
+        self.discriminator_iteration = 0  # for tensorboard
 
         print('*' * 60 + '\nSTARTED KernelGAN on: \"%s\"...' % conf.input_image_path)
 
@@ -88,7 +89,8 @@ class KernelGAN:
         loss_g = self.criterionGAN(d_last_layer=d_pred_fake, is_d_input_real=True)
         # Sum all losses
         total_loss_g = loss_g + self.calc_constraints(g_pred)
-        writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration)
+        if not (self.generator_iteration % 100):
+            writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration)
         self.generator_iteration += 1
         # Calculate gradients
         total_loss_g.backward()
@@ -122,6 +124,9 @@ class KernelGAN:
         loss_d_fake = self.criterionGAN(d_pred_fake, is_d_input_real=False)
         loss_d_real = self.criterionGAN(d_pred_real, is_d_input_real=True)
         loss_d = (loss_d_fake + loss_d_real) * 0.5
+        if not (self.discriminator_iteration % 100):
+            writer.add_scalar("discriminatorLoss", loss_d, self.discriminator_iteration)
+        self.discriminator_iteration += 1
         # Calculate gradients, note that gradients are not propagating back through generator
         loss_d.backward()
         # Update weights, note that only discriminator weights are updated (by definition of the D optimizer)
