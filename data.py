@@ -5,7 +5,7 @@ from imresize import imresize
 from util import read_image, create_gradient_map, im2tensor, create_probability_map, nn_interpolation, rgb2gray
 import torch
 import torchvision
-from scipy import signal
+from scipy import signal, ndimage
 
 
 np.random.seed(0)
@@ -14,8 +14,8 @@ torch.manual_seed(0)
 
 def my_prob_map(image):
     g_im = rgb2gray(image)
-    sx = np.ndimage.sobel(g_im, axis=0)
-    sy = np.ndimage.sobel(g_im, axis=1)
+    sx = ndimage.sobel(g_im, axis=0)
+    sy = ndimage.sobel(g_im, axis=1)
     sobel = np.hypot(sx, sy)
 
     p_map = signal.convolve2d(sobel, np.ones((3, 3)), mode='same')
