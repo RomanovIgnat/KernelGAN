@@ -1,13 +1,26 @@
 import numpy as np
+import scipy
 from torch.utils.data import Dataset
 from imresize import imresize
-from util import read_image, create_gradient_map, im2tensor, create_probability_map, nn_interpolation
+from util import read_image, create_gradient_map, im2tensor, create_probability_map, nn_interpolation, rgb2gray
 import torch
 import torchvision
+from scipy import signal
 
 
 np.random.seed(0)
 torch.manual_seed(0)
+
+
+def my_prob_map(image):
+    g_im = rgb2gray(image)
+    sx = np.ndimage.sobel(g_im, axis=0)
+    sy = np.ndimage.sobel(g_im, axis=1)
+    sobel = np.hypot(sx, sy)
+
+    p_map = signal.convolve2d(sobel, np.ones((3, 3)), mode='same')
+    p_map /= np.sum(p_map)
+    return p_map.flatten()
 
 
 class DataGenerator(Dataset):
@@ -24,21 +37,22 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
-        #  self.input_lr = read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0803ss.png") / 255.  # implement
+        self.input_lr = imresize(im=self.input_image, scale_factor=0.5, kernel='cubic') # read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0803ss.png") / 255.  # implement
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
         # Create prob map for choosing the crop
-        self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
+        self.crop_indices_for_g = np.random.choice(a=len(self.input_image[:, :, 0]), size=conf.max_iters, p=my_prob_map(self.input_image))
+        self.crop_indices_for_d = np.random.choice(a=len(self.input_image[:, :, 0]), size=conf.max_iters, p=my_prob_map(self.input_image)) # self.make_list_of_crop_indices(conf=conf)
 
     def __len__(self):
         return 1
 
     def __getitem__(self, idx):
         """Get a crop for both G and D """
-        g_in = self.my_next_crop(for_g=True) #, idx=idx)  # comment idx
-        d_in = self.my_next_crop(for_g=False) #, idx=idx)  # comment idx
+        g_in = self.next_crop(for_g=True, idx=idx)  # comment idx
+        d_in = self.next_crop(for_g=False, idx=idx)  # comment idx
 
         return g_in, d_in
 
@@ -94,3 +108,4 @@ class DataGenerator(Dataset):
             cropped_image += im2tensor(np.random.randn(size_of_crop, size_of_crop, 3) / 255.)
 
         return cropped_image
+
