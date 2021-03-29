@@ -43,7 +43,7 @@ class DataGenerator(Dataset):
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
         # Create prob map for choosing the crop
-        print(len(self.input_image), my_prob_map(self.input_image).shape)
+        print(len(self.input_image) * len(self.input_image[0]), my_prob_map(self.input_image).shape)
         self.crop_indices_for_g = np.random.choice(a=len(self.input_image[:, :, 0]), size=conf.max_iters, p=my_prob_map(self.input_image))
         self.crop_indices_for_d = np.random.choice(a=len(self.input_image[:, :, 0]), size=conf.max_iters, p=my_prob_map(self.input_image)) # self.make_list_of_crop_indices(conf=conf)
 
