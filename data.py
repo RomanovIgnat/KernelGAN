@@ -19,9 +19,6 @@ def my_prob_map(image):
     sobel = np.hypot(sx, sy)
     sobel *= np.max(sobel)
 
-    gx, gy = np.gradient(g_im)
-    res = np.hypot(gx, gy)
-
     p_map = signal.convolve2d(sobel, np.ones((5, 5)), mode='same')
     p_map /= np.sum(p_map)
     return p_map.flatten()
@@ -47,9 +44,10 @@ class DataGenerator(Dataset):
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
         # Create prob map for choosing the crop
-        print(len(self.input_image) * len(self.input_image[0]), my_prob_map(self.input_image).shape)
-        self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image))
-        self.crop_indices_for_d = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image)) # self.make_list_of_crop_indices(conf=conf)
+        # print(len(self.input_image) * len(self.input_image[0]), my_prob_map(self.input_image).shape)
+        # self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image))
+        # self.crop_indices_for_d = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image)) # self.make_list_of_crop_indices(conf=conf)
+        self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
 
     def __len__(self):
         return 1
