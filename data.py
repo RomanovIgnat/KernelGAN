@@ -17,11 +17,12 @@ def my_prob_map(image):
     sx = ndimage.sobel(g_im, axis=0)
     sy = ndimage.sobel(g_im, axis=1)
     sobel = np.hypot(sx, sy)
+    sobel *= np.max(sobel)
 
     gx, gy = np.gradient(g_im)
     res = np.hypot(gx, gy)
 
-    p_map = signal.convolve2d(res, np.ones((5, 5)), mode='same')
+    p_map = signal.convolve2d(sobel, np.ones((5, 5)), mode='same')
     p_map /= np.sum(p_map)
     return p_map.flatten()
 
