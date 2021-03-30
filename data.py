@@ -18,7 +18,7 @@ def my_prob_map(image):
     sy = ndimage.sobel(g_im, axis=1)
     sobel = np.hypot(sx, sy)
 
-    gx, gy = np.gradient(image)
+    gx, gy = np.gradient(g_im)
     res = np.hypot(gx, gy)
 
     p_map = signal.convolve2d(res, np.ones((5, 5)), mode='same')
