@@ -38,16 +38,16 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
-        self.input_lr = imresize(im=self.input_image, scale_factor=0.5, kernel='cubic') # read_image("/content/gdrive/MyDrive/for_ws_kernel_gan/0803ss.png") / 255.  # implement
+        self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path)
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
         # Create prob map for choosing the crop
         # print(len(self.input_image) * len(self.input_image[0]), my_prob_map(self.input_image).shape)
-        # self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image))
-        # self.crop_indices_for_d = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image)) # self.make_list_of_crop_indices(conf=conf)
-        self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
+        self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image))
+        self.crop_indices_for_d = np.random.choice(a=(len(self.input_lr) * len(self.input_lr[0])), size=conf.max_iters, p=my_prob_map(self.input_lr)) # self.make_list_of_crop_indices(conf=conf)
+        # self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
 
     def __len__(self):
         return 1
@@ -98,8 +98,9 @@ class DataGenerator(Dataset):
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
         center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
-        row, col = int(center / self.input_image.shape[1]), center % self.input_image.shape[1]
-        top, left = min(max(0, row - size // 2), self.input_image.shape[0] - size), min(max(0, col - size // 2), self.input_image.shape[1] - size)
+        image = self.input_image if for_g else self.input_lr
+        row, col = int(center / image.shape[1]), center % image.shape[1]
+        top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2), image.shape[1] - size)
         # Choose even indices (to avoid misalignment with the loss map for_g)
         return top - top % 2, left - left % 2
 

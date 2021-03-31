@@ -27,7 +27,7 @@ class Config:
         self.parser.add_argument('--D_kernel_size', type=int, default=7, help='Discriminators convolution kernels size')
 
         # Iterations
-        self.parser.add_argument('--max_iters', type=int, default=2500, help='# of iterations')
+        self.parser.add_argument('--max_iters', type=int, default=3000, help='# of iterations')
 
         # Optimization hyper-parameters
         self.parser.add_argument('--g_lr', type=float, default=2e-4, help='initial learning rate for generator')
@@ -44,6 +44,8 @@ class Config:
         self.parser.add_argument('--do_ZSSR', action='store_true', help='when activated - ZSSR is not performed')
         self.parser.add_argument('--noise_scale', type=float, default=1., help='ZSSR uses this to partially de-noise images')
         self.parser.add_argument('--real_image', action='store_true', help='ZSSRs configuration is for real images')
+
+        self.parser.add_argument('--weakly_supervised_path', default=None)
 
     def parse(self, args=None):
         """Parse the configuration"""
