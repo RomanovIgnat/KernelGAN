@@ -207,6 +207,8 @@ def kernel_shift(kernel, sf):
     # Finally shift the kernel and return
     kernel = interpolation.shift(kernel, shift_vec)
 
+    print("kernel shape", kernel.shape)
+
     return kernel
 
 
