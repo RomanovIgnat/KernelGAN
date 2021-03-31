@@ -38,7 +38,7 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
-        self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path) / 255.
+        self.input_lr = self.input_image # if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path) / 255.
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
@@ -99,7 +99,7 @@ class DataGenerator(Dataset):
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
         center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
-        image = self.input_image if for_g else self.input_lr
+        image = self.input_image # if for_g else self.input_lr
         row, col = int(center / image.shape[1]), center % image.shape[1]
         top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2), image.shape[1] - size)
         # Choose even indices (to avoid misalignment with the loss map for_g)
