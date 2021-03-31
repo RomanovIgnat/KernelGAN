@@ -90,16 +90,21 @@ class DataGenerator(Dataset):
         # Crop 10 pixels to avoid boundaries effects in synthetically generated examples
         if not real_image:
             self.input_image = self.input_image[10:-10, 10:-10, :]
+            self.input_lr = self.input_lr[10:-10, 10:-10, :]
         # Crop pixels for the shape to be divisible by the scale factor
         sf = int(1 / scale_factor)
         shape = self.input_image.shape
         self.input_image = self.input_image[:-(shape[0] % sf), :, :] if shape[0] % sf > 0 else self.input_image
         self.input_image = self.input_image[:, :-(shape[1] % sf), :] if shape[1] % sf > 0 else self.input_image
 
+        shape_lr = self.input_lr.shape
+        self.input_lr = self.input_lr[:-(shape_lr[0] % sf), :, :] if shape_lr[0] % sf > 0 else self.input_lr
+        self.input_image = self.input_lr[:, :-(shape_lr[1] % sf), :] if shape_lr[1] % sf > 0 else self.input_lr
+
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
         center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
-        image = self.input_image # if for_g else self.input_lr
+        image = self.input_image if for_g else self.input_lr
         row, col = int(center / image.shape[1]), center % image.shape[1]
         top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2), image.shape[1] - size)
         # Choose even indices (to avoid misalignment with the loss map for_g)
