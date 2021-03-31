@@ -98,7 +98,7 @@ class DataGenerator(Dataset):
 
         shape_lr = self.input_lr.shape
         self.input_lr = self.input_lr[:-(shape_lr[0] % sf), :, :] if shape_lr[0] % sf > 0 else self.input_lr
-        self.input_image = self.input_lr[:, :-(shape_lr[1] % sf), :] if shape_lr[1] % sf > 0 else self.input_lr
+        self.input_lr = self.input_lr[:, :-(shape_lr[1] % sf), :] if shape_lr[1] % sf > 0 else self.input_lr
 
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
