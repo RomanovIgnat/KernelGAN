@@ -106,6 +106,15 @@ class KernelGAN:
         loss_sum2one = self.sum2one_loss.forward(kernel=self.curr_k)
         loss_centralized = self.centralized_loss.forward(kernel=self.curr_k)
         loss_sparse = self.sparse_loss.forward(kernel=self.curr_k)
+
+        if not (self.discriminator_iteration % 100):
+            writer.add_scalar("bicubicLoss", self.loss_bicubic, self.discriminator_iteration)
+            writer.add_scalar("boundaryLoss", loss_boundaries, self.discriminator_iteration)
+            writer.add_scalar("sum2oneLoss", loss_sum2one, self.discriminator_iteration)
+            writer.add_scalar("centralizedLoss", loss_centralized, self.discriminator_iteration)
+            writer.add_scalar("sparseLoss", loss_sparse, self.discriminator_iteration)
+        self.discriminator_iteration += 1
+
         # Apply constraints co-efficients
         return self.loss_bicubic * self.lambda_bicubic + loss_sum2one * self.lambda_sum2one + \
                loss_boundaries * self.lambda_boundaries + loss_centralized * self.lambda_centralized + \
