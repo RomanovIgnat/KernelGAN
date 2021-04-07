@@ -17,6 +17,7 @@ def my_prob_map(image):
     sx = ndimage.sobel(g_im, axis=0)
     sy = ndimage.sobel(g_im, axis=1)
     sobel = np.hypot(sx, sy)
+    sobel = np.clip((sobel - 0.7), 0, 1)
     sobel *= 1 / np.max(sobel)
 
     p_map = signal.convolve2d(sobel, np.ones((5, 5)) / 25, mode='same')
