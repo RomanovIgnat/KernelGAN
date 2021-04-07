@@ -63,9 +63,10 @@ class DataGenerator(Dataset):
 
     def next_crop(self, for_g, idx):
         """Return a crop according to the pre-determined list of indices. Noise is added to crops for D"""
+        image = self.input_image if for_g else self.input_lr
         size = self.g_input_shape if for_g else self.d_input_shape
         top, left = self.get_top_left(size, for_g, idx)
-        crop_im = np.copy(self.input_image[top:top + size, left:left + size, :])
+        crop_im = np.copy(image[top:top + size, left:left + size, :])
         # if not for_g:  # Add noise to the image for d
             # crop_im += np.random.randn(*crop_im.shape) / 255.0
         return im2tensor(crop_im)
@@ -104,7 +105,7 @@ class DataGenerator(Dataset):
 
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
-        center = self.crop_indices_for_g[idx] if for_g else int(self.crop_indices_for_d[idx])
+        center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
         image = self.input_image if for_g else self.input_lr
         row, col = int(center / image.shape[1]), center % image.shape[1]
         top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2), image.shape[1] - size)
