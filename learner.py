@@ -9,7 +9,6 @@ class Learner:
     lambda_centralized_end = 1
     lambda_bicubic_min = 5e-6
 
-
     def __init__(self):
         self.bic_loss_counter = 0
         self.similar_to_bicubic = False  # Flag indicating when the bicubic similarity is achieved

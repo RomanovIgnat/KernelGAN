@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from util import save_final_kernel, run_zssr, post_process_k
 from torch.utils.tensorboard import SummaryWriter
 
-
 writer = SummaryWriter()
 
 
@@ -56,8 +55,7 @@ class KernelGAN:
         self.optimizer_G = torch.optim.Adam(self.G.parameters(), lr=conf.g_lr, betas=(conf.beta1, 0.999))
         self.optimizer_D = torch.optim.Adam(self.D.parameters(), lr=conf.d_lr, betas=(conf.beta1, 0.999))
 
-        self.generator_iteration = 0  # for tensorboard
-        self.discriminator_iteration = 0  # for tensorboard
+        self.iteration = 0  # for tensorboard
 
         print('*' * 60 + '\nSTARTED KernelGAN on: \"%s\"...' % conf.input_image_path)
 
@@ -70,6 +68,11 @@ class KernelGAN:
         self.curr_k = curr_k.squeeze().flip([0, 1])
 
     def train(self, g_input, d_input):
+        if not (self.iteration % 10):
+            writer.add_image("CropForG", g_input, self.iteration)
+            writer.add_image("CropForD", d_input, self.iteration)
+        self.iteration += 1
+
         self.set_input(g_input, d_input)
         self.train_g()
         self.train_d()
@@ -89,9 +92,9 @@ class KernelGAN:
         loss_g = self.criterionGAN(d_last_layer=d_pred_fake, is_d_input_real=True)
         # Sum all losses
         total_loss_g = loss_g + self.calc_constraints(g_pred)
-        if not (self.generator_iteration % 10):
-            writer.add_scalar("generatorLoss", total_loss_g, self.generator_iteration)
-        self.generator_iteration += 1
+        if not (self.iteration % 10):
+            writer.add_scalar("generatorLoss", loss_g, self.iteration)
+            writer.add_scalar("TotalGeneratorLoss", total_loss_g, self.iteration)
         # Calculate gradients
         total_loss_g.backward()
         # Update weights
@@ -100,6 +103,8 @@ class KernelGAN:
     def calc_constraints(self, g_pred):
         # Calculate K which is equivalent to G
         self.calc_curr_k()
+        if not (self.iteration % 10):
+            writer.add_image("curKernel", self.curr_k * (1 / torch.max(self.curr_k)), self.iteration)
         # Calculate constraints
         self.loss_bicubic = self.bicubic_loss.forward(g_input=self.g_input, g_output=g_pred)
         loss_boundaries = self.boundaries_loss.forward(kernel=self.curr_k)
@@ -107,12 +112,12 @@ class KernelGAN:
         loss_centralized = self.centralized_loss.forward(kernel=self.curr_k)
         loss_sparse = self.sparse_loss.forward(kernel=self.curr_k)
 
-        if not (self.generator_iteration % 100):
-            writer.add_scalar("bicubicLoss", self.loss_bicubic, self.generator_iteration)
-            writer.add_scalar("boundaryLoss", loss_boundaries, self.generator_iteration)
-            writer.add_scalar("sum2oneLoss", loss_sum2one, self.generator_iteration)
-            writer.add_scalar("centralizedLoss", loss_centralized, self.generator_iteration)
-            writer.add_scalar("sparseLoss", loss_sparse, self.generator_iteration)
+        if not (self.iteration % 10):
+            writer.add_scalar("constraints/bicubicLoss", self.loss_bicubic, self.iteration)
+            writer.add_scalar("constraints/boundaryLoss", loss_boundaries, self.iteration)
+            writer.add_scalar("constraints/sum2oneLoss", loss_sum2one, self.iteration)
+            writer.add_scalar("constraints/centralizedLoss", loss_centralized, self.iteration)
+            writer.add_scalar("constraints/sparseLoss", loss_sparse, self.iteration)
 
         # Apply constraints co-efficients
         return self.loss_bicubic * self.lambda_bicubic + loss_sum2one * self.lambda_sum2one + \
@@ -133,9 +138,8 @@ class KernelGAN:
         loss_d_real = self.criterionGAN(d_pred_real, is_d_input_real=True)
         loss_d = (loss_d_fake + loss_d_real) * 0.5
 
-        if not (self.discriminator_iteration % 100):
-            writer.add_scalar("discriminatorLoss", loss_d, self.discriminator_iteration)
-        self.discriminator_iteration += 1
+        if not (self.iteration % 10):
+            writer.add_scalar("discriminatorLoss", loss_d, self.iteration)
 
         # Calculate gradients, note that gradients are not propagating back through generator
         loss_d.backward()
