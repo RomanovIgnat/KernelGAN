@@ -57,7 +57,7 @@ class KernelGAN:
         self.optimizer_D = torch.optim.Adam(self.D.parameters(), lr=conf.d_lr, betas=(conf.beta1, 0.999))
 
         self.iteration = 0  # for tensorboard
-        self.ground_truth_kernel = torch.tensor(np.loadtxt(conf.ground_truth_kernel_path))
+        self.ground_truth_kernel = np.loadtxt(conf.ground_truth_kernel_path)
 
         print('*' * 60 + '\nSTARTED KernelGAN on: \"%s\"...' % conf.input_image_path)
 
