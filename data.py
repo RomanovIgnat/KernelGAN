@@ -19,7 +19,7 @@ def my_prob_map(image):
     sobel = np.hypot(sx, sy)
     sobel *= 1 / np.max(sobel)
 
-    p_map = signal.convolve2d(sobel, np.ones((5, 5)), mode='same')
+    p_map = signal.convolve2d(sobel, np.ones((5, 5)) / 25, mode='same')
     p_map /= np.sum(p_map)
 
     return p_map.flatten()
