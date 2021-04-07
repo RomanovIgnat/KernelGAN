@@ -42,6 +42,7 @@ class DataGenerator(Dataset):
         self.input_image = read_image(conf.input_image_path) / 255.
         self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path) / 255.
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
+        print(self.input_image.shape, self.input_lr.shape)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
