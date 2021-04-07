@@ -108,6 +108,9 @@ class KernelGAN:
         if not (self.iteration % 10):
             writer.add_image("curKernel", self.curr_k * (1 / torch.max(self.curr_k)), self.iteration, dataformats="HW")
             writer.add_scalar("KernelPsnr", 10 * np.log10(1 / np.mean((self.ground_truth_kernel - self.curr_k) ** 2)), self.iteration)
+        # Calculate constraints
+        self.loss_bicubic = self.bicubic_loss.forward(g_input=self.g_input, g_output=g_pred)
+        loss_boundaries = self.boundaries_loss.forward(kernel=self.curr_k)
         loss_sum2one = self.sum2one_loss.forward(kernel=self.curr_k)
         loss_centralized = self.centralized_loss.forward(kernel=self.curr_k)
         loss_sparse = self.sparse_loss.forward(kernel=self.curr_k)
