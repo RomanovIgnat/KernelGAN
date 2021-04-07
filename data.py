@@ -8,8 +8,8 @@ import torchvision
 from scipy import signal, ndimage
 
 
-np.random.seed(0)
-torch.manual_seed(0)
+# np.random.seed(0)
+# torch.manual_seed(0)
 
 
 def my_prob_map(image):
