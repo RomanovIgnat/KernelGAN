@@ -41,9 +41,7 @@ class DataGenerator(Dataset):
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
         self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path) / 255.
-        print(self.input_image.shape, self.input_lr.shape)
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
-        print(self.input_image.shape, self.input_lr.shape)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
 
@@ -68,8 +66,8 @@ class DataGenerator(Dataset):
         size = self.g_input_shape if for_g else self.d_input_shape
         top, left = self.get_top_left(size, for_g, idx)
         crop_im = np.copy(self.input_image[top:top + size, left:left + size, :])
-        if not for_g:  # Add noise to the image for d
-            crop_im += np.random.randn(*crop_im.shape) / 255.0
+        # if not for_g:  # Add noise to the image for d
+            # crop_im += np.random.randn(*crop_im.shape) / 255.0
         return im2tensor(crop_im)
 
     def make_list_of_crop_indices(self, conf):
