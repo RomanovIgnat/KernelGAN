@@ -47,7 +47,7 @@ class DataGenerator(Dataset):
         # Create prob map for choosing the crop
         # print(len(self.input_image) * len(self.input_image[0]), my_prob_map(self.input_image).shape)
         self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image))
-        self.crop_indices_for_d = self.crop_indices_for_g // 2 # np.random.choice(a=(len(self.input_lr) * len(self.input_lr[0])), size=conf.max_iters, p=my_prob_map(self.input_lr)) # self.make_list_of_crop_indices(conf=conf)
+        self.crop_indices_for_d = self.crop_indices_for_g / 2  # np.random.choice(a=(len(self.input_lr) * len(self.input_lr[0])), size=conf.max_iters, p=my_prob_map(self.input_lr)) # self.make_list_of_crop_indices(conf=conf)
         # self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
 
     def __len__(self):
@@ -103,7 +103,7 @@ class DataGenerator(Dataset):
 
     def get_top_left(self, size, for_g, idx):
         """Translate the center of the index of the crop to it's corresponding top-left"""
-        center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
+        center = self.crop_indices_for_g[idx] if for_g else int(self.crop_indices_for_d[idx])
         image = self.input_image if for_g else self.input_lr
         row, col = int(center / image.shape[1]), center % image.shape[1]
         top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2), image.shape[1] - size)
