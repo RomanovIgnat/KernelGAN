@@ -42,6 +42,8 @@ class DataGenerator(Dataset):
         self.input_image = read_image(conf.input_image_path) / 255.
         self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path) / 255.
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
+        self.input_image_for_crop = np.copy(self.input_image)
+        self.input_lr_for_crop = np.copy(self.input_lr)
         print(self.input_image.shape, self.input_lr.shape)
 
         # self.in_rows, self.in_cols = self.input_image.shape[0:2]
@@ -64,7 +66,7 @@ class DataGenerator(Dataset):
 
     def next_crop(self, for_g, idx):
         """Return a crop according to the pre-determined list of indices. Noise is added to crops for D"""
-        image = self.input_image if for_g else self.input_lr
+        image = self.input_image_for_crop if for_g else self.input_lr_for_crop
         size = self.g_input_shape if for_g else self.d_input_shape
         top, left = self.get_top_left(size, for_g, idx)
         crop_im = np.copy(image[top:top + size, left:left + size, :])
