@@ -27,7 +27,7 @@ class Config:
         self.parser.add_argument('--D_kernel_size', type=int, default=7, help='Discriminators convolution kernels size')
 
         # Iterations
-        self.parser.add_argument('--max_iters', type=int, default=3000, help='# of iterations')
+        self.parser.add_argument('--max_iters', type=int, default=7000, help='# of iterations')
 
         # Optimization hyper-parameters
         self.parser.add_argument('--g_lr', type=float, default=2e-4, help='initial learning rate for generator')
