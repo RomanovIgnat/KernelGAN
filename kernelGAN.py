@@ -58,7 +58,7 @@ class KernelGAN:
 
         self.iteration = 0  # for tensorboard
         self.ground_truth_kernel = np.loadtxt(conf.ground_truth_kernel_path)
-        writer.add_image("ground_truth_kernel", self.ground_truth_kernel, 0, dataformats="HW")
+        writer.add_image("ground_truth_kernel", self.ground_truth_kernel * (1 / np.max(self.ground_truth_kernel)), 0, dataformats="HW")
 
         print('*' * 60 + '\nSTARTED KernelGAN on: \"%s\"...' % conf.input_image_path)
 
