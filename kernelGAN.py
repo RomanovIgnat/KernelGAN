@@ -107,7 +107,7 @@ class KernelGAN:
         # Calculate K which is equivalent to G
         self.calc_curr_k()
         if not (self.iteration % 10):
-            writer.add_image("curKernel", np.clip(move2cpu(self.curr_k * (1 / torch.max(self.curr_k))), 0, 1), self.iteration, dataformats="HW")
+            writer.add_image("curKernel", move2cpu((self.curr_k - torch.min(self.curr_k)) / (torch.max(self.curr_k) - torch.min(self.curr_k))), self.iteration, dataformats="HW")
             writer.add_scalar("KernelPsnr", 10 * np.log10(1 / np.mean((self.ground_truth_kernel - move2cpu(self.curr_k)) ** 2)), self.iteration)
         # Calculate constraints
         self.loss_bicubic = self.bicubic_loss.forward(g_input=self.g_input, g_output=g_pred)
