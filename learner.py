@@ -3,7 +3,7 @@ class Learner:
     lambda_update_freq = 200
     bic_loss_to_start_change = 0.4
     lambda_bicubic_decay_rate = 100.
-    update_l_rate_freq = 300
+    update_l_rate_freq = 500
     update_l_rate_rate = 2 #10.
     lambda_sparse_end = 5
     lambda_centralized_end = 1
