@@ -20,9 +20,9 @@ class Learner:
         # Update learning rate every update_l_rate freq
         if iteration % self.update_l_rate_freq == 0:
             for params in gan.optimizer_G.param_groups:
-                params['lr'] /= self.update_l_rate_rate
+                params['lr'] *= 0.9  # /= self.update_l_rate_rate
             for params in gan.optimizer_D.param_groups:
-                params['lr'] /= self.update_l_rate_rate
+                params['lr'] *= 0.9  # /= self.update_l_rate_rate
 
         # Until similar to bicubic is satisfied, don't update any other lambdas
         if not self.similar_to_bicubic:
