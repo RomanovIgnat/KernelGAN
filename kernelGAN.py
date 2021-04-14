@@ -72,8 +72,8 @@ class KernelGAN:
 
     def train(self, g_input, d_input):
         if not (self.iteration % 10):
-            writer.add_image("CropForG", torch.squeeze(g_input), self.iteration)
-            writer.add_image("CropForD", torch.squeeze(d_input), self.iteration)
+            writer.add_image("CropForG", (torch.squeeze(g_input) + 1) / 2, self.iteration)
+            writer.add_image("CropForD", (torch.squeeze(d_input) + 1) / 2, self.iteration)
         self.iteration += 1
 
         self.set_input(g_input, d_input)

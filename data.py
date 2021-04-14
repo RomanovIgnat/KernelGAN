@@ -75,7 +75,7 @@ class DataGenerator(Dataset):
         crop_im = np.copy(image[top:top + size, left:left + size, :])
         # if not for_g:  # Add noise to the image for d
         # crop_im += np.random.randn(*crop_im.shape) / 255.0
-        return torch.Tensor(crop_im)  # im2tensor(crop_im)
+        return im2tensor(crop_im)
 
     def make_list_of_crop_indices(self, conf):
         iterations = conf.max_iters
