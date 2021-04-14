@@ -3,7 +3,7 @@ class Learner:
     lambda_update_freq = 200
     bic_loss_to_start_change = 0.4
     lambda_bicubic_decay_rate = 100.
-    update_l_rate_freq = 750
+    update_l_rate_freq = 600
     update_l_rate_rate = 2 #10.
     lambda_sparse_end = 5
     lambda_centralized_end = 1
@@ -20,9 +20,9 @@ class Learner:
         # Update learning rate every update_l_rate freq
         if iteration % self.update_l_rate_freq == 0:
             for params in gan.optimizer_G.param_groups:
-                params['lr'] *= 0.9  # /= self.update_l_rate_rate
+                params['lr'] *= 0.5  # /= self.update_l_rate_rate
             for params in gan.optimizer_D.param_groups:
-                params['lr'] *= 0.9  # /= self.update_l_rate_rate
+                params['lr'] *= 0.5  # /= self.update_l_rate_rate
 
         # Until similar to bicubic is satisfied, don't update any other lambdas
         if not self.similar_to_bicubic:
