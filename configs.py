@@ -15,7 +15,7 @@ class Config:
         self.parser.add_argument('--output_dir_path', default=os.path.dirname(__file__) + '/results', help='results path')
 
         # Sizes
-        self.parser.add_argument('--input_crop_size', type=int, default=128, help='Generators crop size')  #64
+        self.parser.add_argument('--input_crop_size', type=int, default=96, help='Generators crop size')  #64
         self.parser.add_argument('--scale_factor', type=float, default=0.5, help='The downscaling scale factor')
         self.parser.add_argument('--X4', action='store_true', help='The wanted SR scale factor')
 
@@ -31,7 +31,7 @@ class Config:
 
         # Optimization hyper-parameters
         self.parser.add_argument('--g_lr', type=float, default=2e-4, help='initial learning rate for generator')
-        self.parser.add_argument('--d_lr', type=float, default=2e-4, help='initial learning rate for discriminator')  # 2
+        self.parser.add_argument('--d_lr', type=float, default=5e-4, help='initial learning rate for discriminator')  # 2
         self.parser.add_argument('--beta1', type=float, default=0.5, help='Adam momentum')
 
         # GPU
