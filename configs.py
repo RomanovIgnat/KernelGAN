@@ -15,7 +15,7 @@ class Config:
         self.parser.add_argument('--output_dir_path', default=os.path.dirname(__file__) + '/results', help='results path')
 
         # Sizes
-        self.parser.add_argument('--input_crop_size', type=int, default=64, help='Generators crop size')
+        self.parser.add_argument('--input_crop_size', type=int, default=128, help='Generators crop size')  #64
         self.parser.add_argument('--scale_factor', type=float, default=0.5, help='The downscaling scale factor')
         self.parser.add_argument('--X4', action='store_true', help='The wanted SR scale factor')
 
