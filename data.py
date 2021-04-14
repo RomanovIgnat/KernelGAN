@@ -40,7 +40,8 @@ class DataGenerator(Dataset):
 
         # Read input image
         self.input_image = read_image(conf.input_image_path) / 255.
-        self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(conf.weakly_supervised_path) / 255.
+        self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(
+            conf.weakly_supervised_path) / 255.
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
         self.input_image_for_crop = np.copy(self.input_image)
         self.input_lr_for_crop = np.copy(self.input_lr)
@@ -50,8 +51,10 @@ class DataGenerator(Dataset):
 
         # Create prob map for choosing the crop
         # print(len(self.input_image) * len(self.input_image[0]), my_prob_map(self.input_image).shape)
-        self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])), size=conf.max_iters, p=my_prob_map(self.input_image))
-        self.crop_indices_for_d = np.random.choice(a=(len(self.input_lr) * len(self.input_lr[0])), size=conf.max_iters, p=my_prob_map(self.input_lr))
+        self.crop_indices_for_g = np.random.choice(a=(len(self.input_image) * len(self.input_image[0])),
+                                                   size=conf.max_iters, p=my_prob_map(self.input_image))
+        self.crop_indices_for_d = np.random.choice(a=(len(self.input_lr) * len(self.input_lr[0])), size=conf.max_iters,
+                                                   p=my_prob_map(self.input_lr))
         # self.crop_indices_for_g, self.crop_indices_for_d = self.make_list_of_crop_indices(conf=conf)
 
     def __len__(self):
@@ -71,8 +74,8 @@ class DataGenerator(Dataset):
         top, left = self.get_top_left(size, for_g, idx)
         crop_im = np.copy(image[top:top + size, left:left + size, :])
         # if not for_g:  # Add noise to the image for d
-            # crop_im += np.random.randn(*crop_im.shape) / 255.0
-        return im2tensor(crop_im)
+        # crop_im += np.random.randn(*crop_im.shape) / 255.0
+        return torch.Tensor(crop_im)  # im2tensor(crop_im)
 
     def make_list_of_crop_indices(self, conf):
         iterations = conf.max_iters
@@ -111,7 +114,8 @@ class DataGenerator(Dataset):
         center = self.crop_indices_for_g[idx] if for_g else self.crop_indices_for_d[idx]
         image = self.input_image if for_g else self.input_lr
         row, col = int(center / image.shape[1]), center % image.shape[1]
-        top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2), image.shape[1] - size)
+        top, left = min(max(0, row - size // 2), image.shape[0] - size), min(max(0, col - size // 2),
+                                                                             image.shape[1] - size)
         # Choose even indices (to avoid misalignment with the loss map for_g)
         return top - top % 2, left - left % 2
 
@@ -123,4 +127,3 @@ class DataGenerator(Dataset):
             cropped_image += im2tensor(np.random.randn(size_of_crop, size_of_crop, 3) / 255.)
 
         return cropped_image
-
