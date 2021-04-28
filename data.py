@@ -42,6 +42,7 @@ class DataGenerator(Dataset):
         self.input_image = read_image(conf.input_image_path) / 255.
         self.input_lr = self.input_image if not conf.weakly_supervised_path else read_image(
             conf.weakly_supervised_path) / 255.
+        print(1 if conf.weakly_supervised_path else 0)
         self.shave_edges(scale_factor=conf.scale_factor, real_image=conf.real_image)
         self.input_image_for_crop = np.copy(self.input_image)
         self.input_lr_for_crop = np.copy(self.input_lr)
