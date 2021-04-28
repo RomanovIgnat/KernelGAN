@@ -45,7 +45,7 @@ class Config:
         self.parser.add_argument('--noise_scale', type=float, default=1., help='ZSSR uses this to partially de-noise images')
         self.parser.add_argument('--real_image', action='store_true', help='ZSSRs configuration is for real images')
 
-        self.parser.add_argument('--weakly_supervised_path', default='/content/gdrive/MyDrive/for_ws_kernel_gan/0830kerTest.png')
+        self.parser.add_argument('--weakly_supervised_path', default=None) # '/content/gdrive/MyDrive/for_ws_kernel_gan/0830kerTest.png')
         self.parser.add_argument("--ground_truth_kernel_path", default='/content/gdrive/MyDrive/ground_truth_kernels/0830_kernel_x2.txt')
 
     def parse(self, args=None):

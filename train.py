@@ -46,6 +46,7 @@ def main():
     prog.add_argument('--SR', action='store_true', help='when activated - ZSSR is not performed')
     prog.add_argument('--real', action='store_true', help='ZSSRs configuration is for real images')
     prog.add_argument('--noise_scale', type=float, default=1., help='ZSSR uses this to partially de-noise images')
+    prog.add_argument("--ws_dir", type=str, help="path for ws_lr images")
     args = prog.parse_args()
     # Run the KernelGAN sequentially on all images in the input directory
     for filename in os.listdir(os.path.abspath(args.input_dir)):
@@ -64,6 +65,8 @@ def create_params(filename, args):
         params.append('--do_ZSSR')
     if args.real:
         params.append('--real_image')
+    if args.ws_dir:
+        params.extend(["--weakly_supervised_path", os.path.join(args.ws_dir, filename.replace("HR", "LR"))])
     return params
 
 
