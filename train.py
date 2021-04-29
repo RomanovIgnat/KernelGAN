@@ -65,8 +65,8 @@ def create_params(filename, args):
         params.append('--do_ZSSR')
     if args.real:
         params.append('--real_image')
-    # if args.ws_dir:
-        # params.extend(["--weakly_supervised_path", os.path.join(args.ws_dir, filename.replace("HR", "LR"))])
+    if args.ws_dir:
+        params.extend(["--weakly_supervised_path", os.path.join(args.ws_dir, filename.replace("HR", "LR"))])
     return params
 
 
