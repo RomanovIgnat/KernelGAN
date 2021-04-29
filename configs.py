@@ -53,7 +53,7 @@ class Config:
         self.conf = self.parser.parse_args(args=args)
         self.set_gpu_device()
         self.clean_file_name()
-        self.set_output_directory()
+        # self.set_output_directory()
         self.conf.G_structure = [7, 5, 3, 1, 1, 1]
         print("Scale Factor: %s \tZSSR: %s \tReal Image: %s" % (('X4' if self.conf.X4 else 'X2'), str(self.conf.do_ZSSR), str(self.conf.real_image)))
         return self.conf
@@ -73,7 +73,7 @@ class Config:
 
     def set_output_directory(self):
         """Define the output directory name and create the folder"""
-        # self.conf.output_dir_path = os.path.join(self.conf.output_dir_path, self.conf.img_name)
+        self.conf.output_dir_path = os.path.join(self.conf.output_dir_path, self.conf.img_name)
         # In case the folder exists - stack 'l's to the folder name
         while os.path.isdir(self.conf.output_dir_path):
             self.conf.output_dir_path += 'l'
