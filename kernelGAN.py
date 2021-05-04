@@ -57,8 +57,8 @@ class KernelGAN:
         self.optimizer_D = torch.optim.Adam(self.D.parameters(), lr=conf.d_lr, betas=(conf.beta1, 0.999))
 
         self.iteration = 0  # for tensorboard
-        self.ground_truth_kernel = np.loadtxt(conf.ground_truth_kernel_path)
-        writer.add_image("ground_truth_kernel", (self.ground_truth_kernel - np.min(self.ground_truth_kernel)) / (np.max(self.ground_truth_kernel - np.min(self.ground_truth_kernel))), 0, dataformats="HW")
+        # self.ground_truth_kernel = np.loadtxt(conf.ground_truth_kernel_path)
+        # writer.add_image("ground_truth_kernel", (self.ground_truth_kernel - np.min(self.ground_truth_kernel)) / (np.max(self.ground_truth_kernel - np.min(self.ground_truth_kernel))), 0, dataformats="HW")
 
         print('*' * 60 + '\nSTARTED KernelGAN on: \"%s\"...' % conf.input_image_path)
 
@@ -108,7 +108,7 @@ class KernelGAN:
         self.calc_curr_k()
         if not (self.iteration % 10):
             writer.add_image("curKernel", move2cpu((self.curr_k - torch.min(self.curr_k)) / (torch.max(self.curr_k) - torch.min(self.curr_k))), self.iteration, dataformats="HW")
-            writer.add_scalar("KernelPsnr", 10 * np.log10(1 / np.mean((self.ground_truth_kernel - move2cpu(self.curr_k)) ** 2)), self.iteration)
+            # writer.add_scalar("KernelPsnr", 10 * np.log10(1 / np.mean((self.ground_truth_kernel - move2cpu(self.curr_k)) ** 2)), self.iteration)
         # Calculate constraints
         self.loss_bicubic = self.bicubic_loss.forward(g_input=self.g_input, g_output=g_pred)
         loss_boundaries = self.boundaries_loss.forward(kernel=self.curr_k)
